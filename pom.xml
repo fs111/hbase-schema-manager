@@ -4,7 +4,7 @@
   <groupId>com.larsgeorge</groupId>
   <artifactId>hbase-schema-manager</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.0</version>
+  <version>1.0-SNAPSHOT</version>
   <name>HBase Schema Manager</name>
 
   <url>http://github.com/larsgeorge/hbase-schema-manager</url>
@@ -18,8 +18,10 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <hadoop-version>0.20-append-r1044525</hadoop-version>
-    <hbase-version>0.91.0-SNAPSHOT</hbase-version>
+    <hadoop-groupId>com.cloudera.hadoop</hadoop-groupId>
+    <hadoop-version>0.20.2-737</hadoop-version>
+    <hbase-groupId>com.cloudera.hbase</hbase-groupId>
+    <hbase-version>0.89.20100924-28</hbase-version>
   </properties>
 
    <build>
@@ -114,7 +116,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>${hadoop-groupId}</groupId>
       <artifactId>hadoop-core</artifactId>
       <version>${hadoop-version}</version>
       <exclusions>
@@ -208,7 +210,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hbase</groupId>
+      <groupId>${hbase-groupId}</groupId>
       <artifactId>hbase</artifactId>
       <version>${hbase-version}</version>
       <exclusions>
