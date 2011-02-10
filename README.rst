@@ -13,6 +13,7 @@ See the sample ``schema.xml`` for a start. You can define as many named configur
 where "options" can be::
 
  -c,--create-config       creates a config from the tables.
+ -h,--help                print this help message.
  -l,--list                lists all tables but performs no further action.
  -n,--dryrun              do not create or change tables, just print out
                           actions.
