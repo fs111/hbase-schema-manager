@@ -39,17 +39,17 @@ import org.apache.hadoop.hbase.util.Bytes;
 public class HBaseManager {
 
   private HBaseAdmin _hbaseAdmin;
-  private String schemaFileName = null;
-  private String configName = null;
+  private String schemaFileName;
+  private String configName;
   private boolean verbose = false;
   private int configNum = -1;
-  private XMLConfiguration config = null;
-  private String configBaseKey = null;
-  private ArrayList<TableSchema> schemas = null;
-  private HTableDescriptor[] remoteTables = null;
-  private CommandLine cmd = null;
-  private String quorum = null;
-  private String zkPort = null;
+  private XMLConfiguration config;
+  private String configBaseKey;
+  private ArrayList<TableSchema> schemas;
+  private HTableDescriptor[] remoteTables;
+  private CommandLine cmd;
+  private String quorum;
+  private String zkPort;
 
   /**
    * Creates a new instance of this class and parses the given command line
@@ -62,7 +62,7 @@ public class HBaseManager {
   public HBaseManager(final String[] args) throws ParseException, ConfigurationException {
     parseArgs(args);
     verbose = cmd.hasOption("v");
-    boolean createConfig = cmd.hasOption("c");
+    final boolean createConfig = cmd.hasOption("c");
     if (!createConfig) {
       readConfiguration();
     } else {
@@ -129,14 +129,18 @@ public class HBaseManager {
     options.addOption("q", "quorum", true, "the list of quorum servers, e.g. \"foo.com,bar.com\"");
     options.addOption("p", "client-port", true, "the zookeeper client port to use, default: 2181");
     options.addOption("v", "verbose", false, "print verbose output.");
-    // check if we are missing parameters
-    if (args.length == 0) {
-      final HelpFormatter formatter = new HelpFormatter();
-      formatter.printHelp("HBaseManager [<options>] [<schema-xml-filename>] [<config-name>]", options);
-      System.exit(-1);
-    }
+    options.addOption("h", "help", false, "print this help message.");
     final CommandLineParser parser = new PosixParser();
     cmd = parser.parse(options, args);
+    if (cmd.hasOption('h') || cmd.getArgList().isEmpty()){
+    	printUsage(options);
+    }
+  }
+
+  private void printUsage(final Options options) {
+	final HelpFormatter formatter = new HelpFormatter();
+      formatter.printHelp("HBaseManager [<options>] [<schema-xml-filename>] [<config-name>]", options);
+      System.exit(-1);
   }
 
   /**
@@ -252,8 +256,8 @@ public class HBaseManager {
     if (verbose) {
       System.out.println("creating configuration...");
     }
-    OutputStream out = "-".equals(schemaFileName) ? System.out : new FileOutputStream(schemaFileName);
-    PrintStream w = new PrintStream(new BufferedOutputStream(out), false, "UTF-8");
+    final OutputStream out = "-".equals(schemaFileName) ? System.out : new FileOutputStream(schemaFileName);
+    final PrintStream w = new PrintStream(new BufferedOutputStream(out), false, "UTF-8");
     w.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     w.println("<configurations>");
     w.println("  <configuration>");
@@ -279,7 +283,7 @@ public class HBaseManager {
       w.println("        <memstore_flush_size>" + d.getMemStoreFlushSize() + "</memstore_flush_size>");
       w.println("        <!-- Default: false -->");
       w.println("        <read_only>" + d.isReadOnly() + "</read_only>");
-      for (HColumnDescriptor col : d.getColumnFamilies()) {
+      for (final HColumnDescriptor col : d.getColumnFamilies()) {
         w.println("        <column_family>");
         w.println("          <name>" + col.getNameAsString() + "</name>");
         //w.println("          <description>" + columnDescription + "</description>");
@@ -319,18 +323,18 @@ public class HBaseManager {
    */
   private Configuration getConfiguration() {
     final Configuration hbaseConfig = HBaseConfiguration.create();
-    String master = getStringProperty("hbase_master", null);
+    final String master = getStringProperty("hbase_master", null);
     if (master != null) {
       hbaseConfig.set("hbase.master", master);
     }
-    String q = getStringProperty("zookeeper_quorum", quorum);
+    final String q = getStringProperty("zookeeper_quorum", quorum);
     if (q != null) {
       hbaseConfig.set("hbase.zookeeper.quorum", q);
     } else {
       System.err.println("ERROR: ZooKeeper quorum not set!");
       System.exit(-10);
     }
-    String p = getStringProperty("zookeeper_client_port", zkPort);
+    final String p = getStringProperty("zookeeper_client_port", zkPort);
     if (p != null) {
       hbaseConfig.set("hbase.zookeeper.property.clientPort", p);
     }
@@ -474,7 +478,7 @@ public class HBaseManager {
    * @param desc2 The second table.
    * @return <code>true</code> when the tables have the same properties.
    */
-  private boolean hasSameProperties(HTableDescriptor desc1, HTableDescriptor desc2) {
+  private boolean hasSameProperties(final HTableDescriptor desc1, final HTableDescriptor desc2) {
     return desc1.isDeferredLogFlush() == desc2.isDeferredLogFlush() &&
       desc1.getMaxFileSize() == desc2.getMaxFileSize() &&
       desc1.getMemStoreFlushSize() == desc2.getMemStoreFlushSize() &&
